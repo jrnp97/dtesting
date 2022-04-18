@@ -60,7 +60,7 @@ ROOT_URLCONF = 'dtesting.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'dtesting', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -132,3 +132,11 @@ AUTH_USER_MODEL = 'accounts.User'
 # CELERY CONFIGURATION
 # REF: https://docs.celeryq.dev/en/stable/userguide/configuration.html#configuration
 CELERY_BROKER_URL = ENV('BROKER_URL')
+
+# EMAIL CONFIGURATION
+EMAIL_USE_TLS= True
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_PORT=25
+EMAIL_HOST_USER=ENV('EMAIL_HOST')
+EMAIL_HOST_PASSWORD=ENV('EMAIL_PWD')
+EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend' # Default
