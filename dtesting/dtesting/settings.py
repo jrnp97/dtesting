@@ -130,4 +130,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
 
 # CELERY CONFIGURATION
+# REF: https://docs.celeryq.dev/en/stable/userguide/configuration.html#configuration
 CELERY_BROKER_URL = ENV('BROKER_URL')
