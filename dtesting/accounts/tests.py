@@ -1,19 +1,23 @@
 from django.test import TestCase, TransactionTestCase
 from django.db.utils import IntegrityError
 from django.utils.text import slugify
+from django.core.mail import send_mail
 
-from .models import User
+from unittest.mock import Mock, MagicMock, patch
+from django.contrib.auth import get_user_model
+from .tasks import new_login_detected
 # Create your tests here.
 
-"""
-* Probar que el email sea unico. [OK]
-* Probar que el atributo `email` [OK], del modelo de usuario sea obligatorio.
-* Probar `first_name`, `last_name` del modelo de usuario sea obligatorio.
-* Se debe autogenerar un `slug` con el primer y segundo nombre de usuario. [OK]
-"""
+User = get_user_model()
 
 
 class TestUser(TransactionTestCase):
+    """
+    * Probar que el email sea unico. [OK]
+    * Probar que el atributo `email` [OK], del modelo de usuario sea obligatorio.
+    * Probar `first_name`, `last_name` del modelo de usuario sea obligatorio.
+    * Se debe autogenerar un `slug` con el primer y segundo nombre de usuario. [OK]
+    """
 
     def test_slug_autogeneration(self):
         """ """
@@ -71,4 +75,48 @@ class TestUser(TransactionTestCase):
         user.save()
         db_user = User.objects.get(email=user.email)
         self.assertEqual(user.id, db_user.id)
+
+
+class TestLogin(TestCase):
+
+    def test_new_login_task(self):
+        """
+        Testing `accounts.tasks.new_login_detected`
+        signature: new_login_detected(user_id: int) -> int
+        logic:
+            * the task receive a parameter `user_id` and it will be an int [OK]
+            * it will send an email with the `django.core.email.send_email` util.
+            * the email only can be sent to the user with the `user_id`
+            * [ERROR] if user_id isn't an int ? => it will raise a TypeError.
+            * [ERROR] if I don't send user_id ? => normal failure [mandatory].
+            * [ERROR] if the user_id doesn't belong to an user. => notificar a quien se logea que fallo.
+            * [ERROR] if the email is not sent. => notificar a quien se logea que fallo.
+                - cause 1: django's util fail.
+                - cause 2: django's util return 0.
+        return:
+            * true if the email was sent.
+
+        """
+        # Successfully
+        fake_user = User(
+            username='jaime',
+            password='1223456',
+            email='jaime@email.com',
+        )
+        fake_user.save()
+        # Proband que la funcion reciba el id del usuario,
+        # envie el email y me retorne True cuando envia el email.
+        result = new_login_detected(user_id=fake_user.id)
+        self.assertTrue(result, msg="No fue enviado email, debia haber enviado por lo menos 1 email")
+
+        # Probar que se este utilizando el django.core.mail.send_email y se este retornando ese valor.
+        with patch('accounts.tasks.send_mail') as send_email_mocked:
+            send_email_mocked.return_value = False
+            result = new_login_detected(user_id=fake_user.id)
+            self.assertEqual(send_email_mocked.call_count, 1)
+            send_email_mocked.assert_called()
+            self.assertFalse(result, msg="La tarea no esta retornando el valor retornado por la utilidad de django")
+
+
+
 
