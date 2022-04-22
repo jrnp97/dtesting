@@ -128,6 +128,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
+LOGIN_REDIRECT_URL = 'accounts:success_login'
 
 # CELERY CONFIGURATION
 # REF: https://docs.celeryq.dev/en/stable/userguide/configuration.html#configuration
