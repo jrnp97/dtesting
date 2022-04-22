@@ -32,10 +32,14 @@ def xsum(numbers):
 
 
 @shared_task
-def new_login_detected(user_id: int) -> None:
+def new_login_detected(user_id: int) -> bool:
     """
     Task to send a new login email notification to user.
     """
+    # if not type(user_id) == int:
+    # if not type(user_id) is int: <-
+    if not isinstance(user_id, int) or user_id < 0:
+        raise TypeError("Invalid `user_id` type.")
     user = User.objects.get(id=user_id)
     delivery_messages = send_mail(
         subject='New Login Detected.',
@@ -46,5 +50,5 @@ def new_login_detected(user_id: int) -> None:
         ],
         fail_silently=False,
     )
-    return True
+    return delivery_messages == 1
 

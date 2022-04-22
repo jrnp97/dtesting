@@ -1,3 +1,5 @@
+import contextlib
+
 from django.test import TestCase, TransactionTestCase
 from django.db.utils import IntegrityError
 from django.utils.text import slugify
@@ -85,10 +87,10 @@ class TestLogin(TestCase):
         signature: new_login_detected(user_id: int) -> int
         logic:
             * the task receive a parameter `user_id` and it will be an int [OK]
-            * it will send an email with the `django.core.email.send_email` util.
+            * it will send an email with the `django.core.email.send_email` util. [OK] - Mock
             * the email only can be sent to the user with the `user_id`
-            * [ERROR] if user_id isn't an int ? => it will raise a TypeError.
-            * [ERROR] if I don't send user_id ? => normal failure [mandatory].
+            * [ERROR] if user_id isn't a positive int ? => it will raise a TypeError [OK].
+            * [ERROR] if I don't send user_id ? => normal failure [mandatory]. [OK]
             * [ERROR] if the user_id doesn't belong to an user. => notificar a quien se logea que fallo.
             * [ERROR] if the email is not sent. => notificar a quien se logea que fallo.
                 - cause 1: django's util fail.
@@ -117,6 +119,25 @@ class TestLogin(TestCase):
             send_email_mocked.assert_called()
             self.assertFalse(result, msg="La tarea no esta retornando el valor retornado por la utilidad de django")
 
+        print("AAA")
+        # Probando que la funcion no acepte valores que no sean int y no sea negativo en el parametro `user_id`
+        bad_values = [
+            "1203103",
+            " ",
+            40505.1032,
+            {},
+            (1,3,4),
+            -1,
+            -2,
+        ]
+        for bad_value in bad_values:
+            with self.assertRaises(TypeError):
+                new_login_detected(user_id=bad_value)
 
-
+        # probando que user_id sea mandatorio
+        with self.assertRaisesMessage(
+                TypeError,
+                expected_message="new_login_detected() missing 1 required positional argument: 'user_id'",
+        ):
+            new_login_detected()
 
