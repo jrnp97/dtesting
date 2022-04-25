@@ -28,8 +28,16 @@ class CustomLoginView(LoginView):
 def success_login(request):
     # Como yo puedo saber que la view esta siendo invocada por causa de un login exitoso.
     print("SUCCESS_VIEW_EXECUTE")
+    print("TRACK_ID", request.track_id)
     return HttpResponse(content=f'You are logged!, {request.user}!')
 
+
+def in_progress_url(request):
+    return HttpResponse("In progress")
+
+
+def in_progress_url_two(request):
+    return HttpResponse("In progress #2")
 
 @login_required
 def test_celery(request):

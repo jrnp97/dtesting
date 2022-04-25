@@ -54,6 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middlewares.CustomMiddleware',
+    'accounts.middlewares.ViewsMantenimiento',
 ]
 
 ROOT_URLCONF = 'dtesting.urls'
@@ -138,6 +140,12 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TRACK_PENDING = True
 # task_track_started
+
+VIEWS_MANTENIMIENTO = [
+    '/accounts/inp/',
+    '/accounts/inp2/',
+]
+
 
 # EMAIL CONFIGURATION
 EMAIL_USE_TLS= True
