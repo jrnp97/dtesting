@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -133,6 +134,10 @@ LOGIN_REDIRECT_URL = 'accounts:success_login'
 # CELERY CONFIGURATION
 # REF: https://docs.celeryq.dev/en/stable/userguide/configuration.html#configuration
 CELERY_BROKER_URL = ENV('BROKER_URL')
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TRACK_PENDING = True
+# task_track_started
 
 # EMAIL CONFIGURATION
 EMAIL_USE_TLS= True

@@ -52,3 +52,8 @@ def new_login_detected(user_id: int) -> bool:
     )
     return delivery_messages == 1
 
+@shared_task
+def no_registered():
+    pass
+
+

@@ -9,7 +9,7 @@ from django.contrib.auth import (
 # Create your views here.
 from django.urls import reverse_lazy
 
-from .tasks import new_login_detected
+from .tasks import new_login_detected, no_registered
 
 
 class CustomLoginView(LoginView):
@@ -27,6 +27,7 @@ class CustomLoginView(LoginView):
 @login_required
 def success_login(request):
     # Como yo puedo saber que la view esta siendo invocada por causa de un login exitoso.
+    print("SUCCESS_VIEW_EXECUTE")
     return HttpResponse(content=f'You are logged!, {request.user}!')
 
 
